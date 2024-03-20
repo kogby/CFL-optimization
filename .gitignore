@@ -3,3 +3,4 @@
 *.ipynb_checkpoints
 *.ipynb.meta
 .DS_Store
+__pycache__/

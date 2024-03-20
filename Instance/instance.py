@@ -32,7 +32,7 @@ opponent_nums = [5, 25, 50]
 dist_formulas = ["euclidean", "manhattan"]
 cus_gen_distribution = ["uniform", "normal" ]
 resource_nums = [1, 5, 10]
-
+resource_benefit = []
 
 ITERATION = 100
 MAP_SIZE = 100
