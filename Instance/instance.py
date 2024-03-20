@@ -1,5 +1,9 @@
 import random
 import yaml
+import datetime
+import os
+import utility as util
+import numpy as np
 
 """
 Instance Parameters
@@ -12,47 +16,74 @@ Competitor Facility Location: L
 U_LT : Max amount of resource k allowed to be allocated to facility j, Dim : (j, k)
 U_T : Max allocation limit for resource k, Dim : (k)
 U_L : Max capacity for facility j, Dim : (j)
-V : Attractiveness yield of resource k allocated to facility j, Dim : (j, k)
+V : Attractiveness yield of an unit of resource k allocated to facility j, Dim : (j, k)
 H : Max demand for customer i, Dim : (i)
 D : Distance between customer i and facility j , Dim : (i, j)
 D_comp : Distance between customer i and competitor l, Dim : (i, l)
 F : Fixed cost for building facility j, Dim : (j)
 C : Cost per unit of extra attractiveness at facility j, Dim : (j)
 B : Cost of allocating a unit of resource k to facility j, Dim : (j, k)
+A_comp : The attractiveness level of competitor l, Dim: (l)
 ===============================
 """
 
+loc_nums = [5, 25, 50]
+opponent_nums = [5, 25, 50]
+dist_formulas = ["euclidean", "manhattan"]
+cus_gen_distribution = ["uniform", "normal" ]
+resource_nums = [1, 5, 10]
+
+
+ITERATION = 100
 MAP_SIZE = 100
-CUSTOMER_NUM = 2  # 2個客戶
-FACILITY_NUM = 3  # 三個設廠地點
-RESOURCE_NUM = 2  # 兩種可分配資源（大車, 小車)
+CUSTOMER_NUM = 2  # 客戶
+FACILITY_NUM = 3  # 設廠地點
+RESOURCE_NUM = 1  # 可分配資源
+OPPONENT_NUM = 1  # 對手
 
-U_L = [random.randint(1, 10) for _ in range(FACILITY_NUM)]
-U_T = [random.randint(3, 10) for _ in range(RESOURCE_NUM)]
-config = {
-    "M": 1000000,
-    "lambda_G": 0.5,
-    "i_amount": 2,
-    "j_amount": 3,
-    "k_amount": 2,
-    "l_amount": 0,  # 對手數量
-    "U_LT": [[3, 5], [3, 5], [3, 5]],
-    "U_T": [5, 10],
-    "U_L": U_L,
-    "V": [[10, 2], [2, 1], [0, 2]],
-    "H": [100, 50],
-    "D": [[1, 1, 1], [1, 1, 1]],
-    "D_comp": [],
-    "A_opponent_bar": [],  # 對手吸引力
-    "F": [0, 0, 0],
-    "C": [1, 1, 1],
-    "B": [[1, 1, 1], [1, 1, 1], [1, 1, 1]],
-}
+for i in range(ITERATION):
+    customers = util.create_points(CUSTOMER_NUM, MAP_SIZE)
+    locations = util.create_points(FACILITY_NUM, MAP_SIZE)
+    locations_oppo = util.create_points(OPPONENT_NUM, MAP_SIZE)
 
+    U_L = [random.randint(5, 15) for _ in range(FACILITY_NUM)]
+    U_T = [random.randint(5, 15) for _ in range(RESOURCE_NUM)]
+    F = [random.randint(1, 10) for _ in range(FACILITY_NUM)]
+    C = [random.randint(1, 3) for _ in range(FACILITY_NUM)]
+    H = [random.randint(20, 40) for _ in range(CUSTOMER_NUM)]
+    D = util.dist_list_generator(customers, locations)
+    D_comp = util.dist_list_generator(customers, locations_oppo)
+    V = np.random.randint(5, 20, size=(FACILITY_NUM, RESOURCE_NUM)).tolist()
+    B = np.random.randint(1, 5, size=(FACILITY_NUM, RESOURCE_NUM)).tolist()
+    A_comp = [random.randint(10, 150) for _ in range(OPPONENT_NUM)]
 
-# Write data to YAML file
-file_path = "experiment_data.yaml"
-with open(file_path, "w") as yaml_file:
-    yaml.dump(config, yaml_file, default_flow_style=False)
+    config = {
+        "M": 1000000,
+        "lambda_G": 0.5,
+        "i_amount": CUSTOMER_NUM,
+        "j_amount": FACILITY_NUM,
+        "k_amount": RESOURCE_NUM,
+        "l_amount": OPPONENT_NUM,
+        "U_LT": [[3, 5], [3, 5], [3, 5]],
+        "U_T": U_T,
+        "U_L": U_L,
+        "V": V,
+        "H": H,
+        "D": D.tolist(),
+        "D_comp":D_comp.tolist(),
+        "A_opponent_bar": A_comp,
+        "F": F,
+        "C": C,
+        "B": B,
+    }
 
-print("Data saved to", file_path)
+    # Write data to YAML file
+    # current_time = datetime.datetime.now()
+    # time_str = current_time.strftime("%m-%d_%H-%M")
+
+    file_path = f"./Instances/instance_F_{i}.yaml"
+    with open(file_path, "w") as yaml_file:
+        yaml.dump(config, yaml_file, default_flow_style=False)
+
+    print("Data saved to", file_path)
+
