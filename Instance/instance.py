@@ -80,10 +80,14 @@ for i in range(ITERATION):
     # Write data to YAML file
     # current_time = datetime.datetime.now()
     # time_str = current_time.strftime("%m-%d_%H-%M")
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    dir_path = os.path.join(script_dir, 'Instances')
+    if not os.path.exists(dir_path):
+        os.makedirs(dir_path)
+    file_path = os.path.join(dir_path, f"instance_F_{i}.yaml")
 
-    file_path = f"./Instances/instance_F_{i}.yaml"
+    # 寫入 yaml 檔案
     with open(file_path, "w") as yaml_file:
         yaml.dump(config, yaml_file, default_flow_style=False)
-
     print("Data saved to", file_path)
 
