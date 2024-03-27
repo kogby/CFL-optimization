@@ -48,6 +48,7 @@ for i in range(ITERATION):
 
     U_L = [random.randint(5, 15) for _ in range(FACILITY_NUM)]
     U_T = [random.randint(5, 15) for _ in range(RESOURCE_NUM)]
+    U_LT = [[random.randint(1, 5) for _ in range(RESOURCE_NUM)] for _ in range(FACILITY_NUM)]
     F = [random.randint(1, 10) for _ in range(FACILITY_NUM)]
     C = [random.randint(1, 3) for _ in range(FACILITY_NUM)]
     H = [random.randint(20, 40) for _ in range(CUSTOMER_NUM)]
@@ -64,7 +65,7 @@ for i in range(ITERATION):
         "j_amount": FACILITY_NUM,
         "k_amount": RESOURCE_NUM,
         "l_amount": OPPONENT_NUM,
-        "U_LT": [[3, 5], [3, 5], [3, 5]],
+        "U_LT": U_LT,
         "U_T": U_T,
         "U_L": U_L,
         "V": V,

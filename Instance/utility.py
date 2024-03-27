@@ -22,7 +22,7 @@ def cal_distance(point_1, point_2, cal_method="euclidean"):
         distance = math.sqrt((x2 - x1)**2 + (y2 - y1)**2)
     elif cal_method == "manhattan":
         distance = abs(x2 - x1) + abs(y2 - y1)
-    return distance
+    return round(distance, 2)
 
 def create_points(num_points, map_size):
     """
