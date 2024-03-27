@@ -34,7 +34,7 @@ cus_gen_distribution = ["uniform", "normal" ]
 resource_nums = [1, 5, 10]
 resource_benefit = []
 
-ITERATION = 100
+ITERATION = 3
 MAP_SIZE = 100
 CUSTOMER_NUM = 2  # 客戶
 FACILITY_NUM = 3  # 設廠地點
@@ -60,7 +60,7 @@ for i in range(ITERATION):
 
     config = {
         "M": 1000000,
-        "lambda_G": 0.5,
+        "lambda_for_G": 6e-6,
         "i_amount": CUSTOMER_NUM,
         "j_amount": FACILITY_NUM,
         "k_amount": RESOURCE_NUM,
@@ -85,7 +85,7 @@ for i in range(ITERATION):
     dir_path = os.path.join(script_dir, 'Instances')
     if not os.path.exists(dir_path):
         os.makedirs(dir_path)
-    file_path = os.path.join(dir_path, f"instance_F_{i}.yaml")
+    file_path = os.path.join(dir_path, f"instance_F_{i+1}.yaml")
 
     # 寫入 yaml 檔案
     with open(file_path, "w") as yaml_file:
