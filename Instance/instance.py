@@ -34,7 +34,7 @@ cus_gen_distribution = ["uniform", "normal" ]
 resource_nums = [1, 5, 10]
 resource_benefit = []
 
-ITERATION = 1
+ITERATION = 100
 MAP_SIZE = 100
 CUSTOMER_NUM = 2  # 客戶
 FACILITY_NUM = 3  # 設廠地點
@@ -58,24 +58,24 @@ for i in range(ITERATION):
     B = np.random.randint(1, 5, size=(FACILITY_NUM, RESOURCE_NUM)).tolist()
     A_comp = [random.randint(10, 150) for _ in range(OPPONENT_NUM)]
 
-    config = {  # 2客戶 3設施j
-        'M': 1000,  # 最多的a可以多少
-        'lambda_for_G': 6e-6,
-        'i_amount' :2, # 客戶
-        'j_amount' :3, # 設廠地點
-        'k_amount' :1, # 可分配資源（大車, 小車)
-        'l_amount' :1, # 對手數量
-        'U_LT': [[2], [3], [4]], # Max amount of resource k allowed to be allocated to facility j, Dim : (j, k)
-        'U_T': [6],  # Max allocation limit for resource k, Dim : (k)
-        'U_L': [3, 3, 3],  # Max capacity for facility j, Dim : (j)
-        'V': [[5000], [4000], [3000]],  # Attractiveness yield of resource k allocated to facility j, Dim : (j, k)
-        'H': [100, 5000],  # Max demand for customer i, Dim : (i)
-        'D': [[3.33, 40.55, 555.1111], [5, 4, 3]],
-        'D_comp':[[10.22], [11111]],
-        'A_opponent_bar': [49], #對手吸引力
-        'F': [1, 2, 1],
-        'C': [0.02, 0.01, 1], 
-        'B': [[0.1], [0.5], [0.3]],
+    config = {
+        "M": 1000000,
+        "lambda_G": 0.5,
+        "i_amount": CUSTOMER_NUM,
+        "j_amount": FACILITY_NUM,
+        "k_amount": RESOURCE_NUM,
+        "l_amount": OPPONENT_NUM,
+        "U_LT": U_LT,
+        "U_T": U_T,
+        "U_L": U_L,
+        "V": V,
+        "H": H,
+        "D": D.tolist(),
+        "D_comp":D_comp.tolist(),
+        "A_opponent_bar": A_comp,
+        "F": F,
+        "C": C,
+        "B": B,
     }
 
     # Write data to YAML file
