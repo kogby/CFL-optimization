@@ -34,12 +34,12 @@ cus_gen_distribution = ["uniform", "normal" ]
 resource_nums = [1, 5, 10]
 resource_benefit = []
 
-ITERATION = 3
+ITERATION = 10
 MAP_SIZE = 100
-CUSTOMER_NUM = 2  # 客戶
-FACILITY_NUM = 3  # 設廠地點
-RESOURCE_NUM = 1  # 可分配資源
-OPPONENT_NUM = 1  # 對手
+CUSTOMER_NUM = 5  # 客戶
+FACILITY_NUM = 12  # 設廠地點
+RESOURCE_NUM = 3  # 可分配資源
+OPPONENT_NUM = 6  # 對手
 
 for i in range(ITERATION):
     customers = util.create_points(CUSTOMER_NUM, MAP_SIZE)
@@ -54,13 +54,13 @@ for i in range(ITERATION):
     H = [random.randint(20, 40) for _ in range(CUSTOMER_NUM)]
     D = util.dist_list_generator(customers, locations)
     D_comp = util.dist_list_generator(customers, locations_oppo)
-    V = np.random.randint(5, 20, size=(FACILITY_NUM, RESOURCE_NUM)).tolist()
+    V = np.random.randint(1000000, 50000000, size=(FACILITY_NUM, RESOURCE_NUM)).tolist()
     B = np.random.randint(1, 5, size=(FACILITY_NUM, RESOURCE_NUM)).tolist()
     A_comp = [random.randint(10, 150) for _ in range(OPPONENT_NUM)]
 
     config = {
         "M": 1000000,
-        "lambda_for_G": 6e-6,
+        "lambda_for_G": 5e-6,
         "i_amount": CUSTOMER_NUM,
         "j_amount": FACILITY_NUM,
         "k_amount": RESOURCE_NUM,
