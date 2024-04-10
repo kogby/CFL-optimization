@@ -56,7 +56,7 @@ for i in range(ITERATION):
     D_comp = util.dist_list_generator(customers, locations_oppo)
     V = np.random.randint(1000000, 50000000, size=(FACILITY_NUM, RESOURCE_NUM)).tolist()
     B = np.random.randint(1, 5, size=(FACILITY_NUM, RESOURCE_NUM)).tolist()
-    A_comp = [random.randint(10, 150) for _ in range(OPPONENT_NUM)]
+    A_comp = [random.randint(1000, 150000) for _ in range(OPPONENT_NUM)]
 
     config = {
         "M": 1000000,
