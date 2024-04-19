@@ -37,7 +37,7 @@ resource_benefit = []
 ITERATION = 10
 MAP_SIZE = 100
 CUSTOMER_NUM = 5  # 客戶
-FACILITY_NUM = 12  # 設廠地點
+FACILITY_NUM = 20  # 設廠地點
 RESOURCE_NUM = 3  # 可分配資源
 OPPONENT_NUM = 6  # 對手
 
@@ -50,13 +50,13 @@ for i in range(ITERATION):
     U_T = [random.randint(5, 15) for _ in range(RESOURCE_NUM)]
     U_LT = [[random.randint(1, 5) for _ in range(RESOURCE_NUM)] for _ in range(FACILITY_NUM)]
     F = [random.randint(1, 10) for _ in range(FACILITY_NUM)]
-    C = [random.randint(1, 3) for _ in range(FACILITY_NUM)]
-    H = [random.randint(20, 40) for _ in range(CUSTOMER_NUM)]
+    C = [random.uniform(0.00005, 0.0003) for _ in range(FACILITY_NUM)]
+    H = [random.randint(200, 4000) for _ in range(CUSTOMER_NUM)]
     D = util.dist_list_generator(customers, locations)
     D_comp = util.dist_list_generator(customers, locations_oppo)
-    V = np.random.randint(1000000, 50000000, size=(FACILITY_NUM, RESOURCE_NUM)).tolist()
+    V = np.random.randint(10000, 500000, size=(FACILITY_NUM, RESOURCE_NUM)).tolist()
     B = np.random.randint(1, 5, size=(FACILITY_NUM, RESOURCE_NUM)).tolist()
-    A_comp = [random.randint(1000, 150000) for _ in range(OPPONENT_NUM)]
+    A_comp = [random.randint(1000, 15000) for _ in range(OPPONENT_NUM)]
 
     config = {
         "M": 1000000,
