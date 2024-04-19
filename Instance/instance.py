@@ -60,7 +60,7 @@ for i in range(ITERATION):
 
     config = {
         "M": 1000000,
-        "lambda_for_G": 5e-6,
+        "lambda_for_G": 3e-6,
         "i_amount": CUSTOMER_NUM,
         "j_amount": FACILITY_NUM,
         "k_amount": RESOURCE_NUM,
