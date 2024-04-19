@@ -1,7 +1,8 @@
 import random
 import yaml
-import datetime
 import os
+import sys
+sys.path.append('../') 
 import utility as util
 import numpy as np
 
