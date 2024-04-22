@@ -2,7 +2,8 @@ import random
 import yaml
 import os
 import sys
-sys.path.append('../') 
+
+sys.path.append("../")
 import utility as util
 import numpy as np
 
@@ -31,16 +32,16 @@ A_comp : The attractiveness level of competitor l, Dim: (l)
 loc_nums = [5, 25, 50]
 opponent_nums = [5, 25, 50]
 dist_formulas = ["euclidean", "manhattan"]
-cus_gen_distribution = ["uniform", "normal" ]
+cus_gen_distribution = ["uniform", "normal"]
 resource_nums = [1, 5, 10]
 resource_benefit = []
 
 ITERATION = 10
 MAP_SIZE = 100
 CUSTOMER_NUM = 5  # 客戶
-FACILITY_NUM = 20  # 設廠地點
-RESOURCE_NUM = 3  # 可分配資源
-OPPONENT_NUM = 6  # 對手
+FACILITY_NUM = 5  # 設廠地點
+RESOURCE_NUM = 2  # 可分配資源
+OPPONENT_NUM = 2  # 對手
 
 for i in range(ITERATION):
     customers = util.create_points(CUSTOMER_NUM, MAP_SIZE)
@@ -49,7 +50,9 @@ for i in range(ITERATION):
 
     U_L = [random.randint(5, 15) for _ in range(FACILITY_NUM)]
     U_T = [random.randint(5, 15) for _ in range(RESOURCE_NUM)]
-    U_LT = [[random.randint(1, 5) for _ in range(RESOURCE_NUM)] for _ in range(FACILITY_NUM)]
+    U_LT = [
+        [random.randint(1, 5) for _ in range(RESOURCE_NUM)] for _ in range(FACILITY_NUM)
+    ]
     F = [random.randint(1, 10) for _ in range(FACILITY_NUM)]
     C = [random.uniform(0.00005, 0.0003) for _ in range(FACILITY_NUM)]
     H = [random.randint(200, 4000) for _ in range(CUSTOMER_NUM)]
@@ -72,7 +75,7 @@ for i in range(ITERATION):
         "V": V,
         "H": H,
         "D": D.tolist(),
-        "D_comp":D_comp.tolist(),
+        "D_comp": D_comp.tolist(),
         "A_opponent_bar": A_comp,
         "F": F,
         "C": C,
@@ -83,7 +86,7 @@ for i in range(ITERATION):
     # current_time = datetime.datetime.now()
     # time_str = current_time.strftime("%m-%d_%H-%M")
     script_dir = os.path.dirname(os.path.abspath(__file__))
-    dir_path = os.path.join(script_dir, 'Instances')
+    dir_path = os.path.join(script_dir, "Instances")
     if not os.path.exists(dir_path):
         os.makedirs(dir_path)
     file_path = os.path.join(dir_path, f"instance_F_{i+1}.yaml")
@@ -92,4 +95,3 @@ for i in range(ITERATION):
     with open(file_path, "w") as yaml_file:
         yaml.dump(config, yaml_file, default_flow_style=False)
     print("Data saved to", file_path)
-
