@@ -63,7 +63,7 @@ for i in range(ITERATION):
     A_comp = [random.randint(1000, 15000) for _ in range(OPPONENT_NUM)]
 
     config = {
-        "M": 1000000,
+        "A_EX_bound": 1000000,
         "lambda_for_G": 3e-6,
         "i_amount": CUSTOMER_NUM,
         "j_amount": FACILITY_NUM,
