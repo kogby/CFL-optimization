@@ -409,10 +409,10 @@ def OG_GE_RF2(config: dict):
     Model (G, reformulate, add E)
     4/24 New G and E
     """
-    I = set(range(0, config["i_amount"]))
-    J = set(range(0, config["j_amount"]))
-    K = set(range(0, config["k_amount"]))
-    L = set(range(0, config["l_amount"]))
+    I = config["i_amount"]
+    J = config["j_amount"]
+    K = config["k_amount"]
+    L = config["l_amount"]
     m = Model("Competitive Facility Location")
     X = []
     for j in range(J):
@@ -480,7 +480,7 @@ def OG_GE_RF2(config: dict):
         m.addConstr(
             TA[i]
             == quicksum(
-                (-0.004 * E_var[j] ** 2 + 0.8 * E_var[j]) / D[i][j] ** 2
+                (-0.004 * E_var[j] ** 2 + 0.8 * E_var[j]) / config['D'][i][j] ** 2
                 for j in range(J)
             )
             + quicksum(
@@ -525,3 +525,4 @@ def OG_GE_RF2(config: dict):
         m.addConstr(
             A_EX[j] <= config["A_EX_bound"] * Y[j], "decoration_limit_" + str(j)
         )
+    return m

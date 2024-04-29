@@ -54,7 +54,7 @@ for i in range(ITERATION):
         [random.randint(1, 5) for _ in range(RESOURCE_NUM)] for _ in range(FACILITY_NUM)
     ]
     F = [random.randint(1, 10) for _ in range(FACILITY_NUM)]
-    C = [random.uniform(0.00005, 0.0003) for _ in range(FACILITY_NUM)]
+    C = [random.uniform(1, 3) for _ in range(FACILITY_NUM)]
     H = [random.randint(200, 4000) for _ in range(CUSTOMER_NUM)]
     D = util.dist_list_generator(customers, locations)
     D_comp = util.dist_list_generator(customers, locations_oppo)
@@ -63,7 +63,8 @@ for i in range(ITERATION):
     A_comp = [random.randint(1000, 15000) for _ in range(OPPONENT_NUM)]
 
     config = {
-        "A_EX_bound": 1000000,  # bathroom limit
+        "A_EX_bound": 100,
+        "lambda_for_G": 3e-6,
         "i_amount": CUSTOMER_NUM,
         "j_amount": FACILITY_NUM,
         "k_amount": RESOURCE_NUM,
@@ -75,7 +76,7 @@ for i in range(ITERATION):
         "H": H,
         "D": D.tolist(),
         "D_comp": D_comp.tolist(),
-        "A_opponent_bar": A_comp,
+        "A_comp": A_comp,
         "F": F,
         "C": C,
         "B": B,
