@@ -413,8 +413,10 @@ def OG_GE_RF2(config: dict):
     J = config["j_amount"]
     K = config["k_amount"]
     L = config["l_amount"]
-    config['A_comp'] = config['A_opponent_bar']
-    config['M'] = config["A_EX_bound"]
+    if 'A_comp' not in config:
+        config['A_comp'] = config['A_opponent_bar']
+    if 'M' not in config:
+        config['M'] = config["A_EX_bound"]
     m = Model("Competitive Facility Location")
     X = []
     for j in range(J):
@@ -482,11 +484,11 @@ def OG_GE_RF2(config: dict):
         m.addConstr(
             TA[i]
             == quicksum(
-                (-0.004 * E_var[j] ** 2 + 0.8 * E_var[j]) / config['D'][i][j] ** 2
+                (-0.004 * E_var[j] ** 2 + 0.8 * E_var[j]) / (config['D'][i][j] ** 2)
                 for j in range(J)
             )
             + quicksum(
-                config["A_comp"][l] / config["D_comp"][i][l] ** 2 for l in range(L)
+                config["A_comp"][l] / (config["D_comp"][i][l] ** 2) for l in range(L)
             ),
             "define_TA_" + str(i),
         )
@@ -499,7 +501,7 @@ def OG_GE_RF2(config: dict):
             - config["H"][i]
             * ALPHA[i]
             * quicksum(
-                config["A_comp"][l] / config["D_comp"][i][l] ** 2 for l in range(L)
+                config["A_comp"][l] / (config["D_comp"][i][l] ** 2 )for l in range(L)
             ),
             "define_W_" + str(i),
         )
