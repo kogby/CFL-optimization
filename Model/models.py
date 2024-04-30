@@ -413,6 +413,8 @@ def OG_GE_RF2(config: dict):
     J = config["j_amount"]
     K = config["k_amount"]
     L = config["l_amount"]
+    config['A_comp'] = config['A_opponent_bar']
+    config['M'] = config["A_EX_bound"]
     m = Model("Competitive Facility Location")
     X = []
     for j in range(J):
