@@ -96,3 +96,20 @@ def save_yaml(data, filename):
     file_path = os.path.join(INSTANCES_DIR, filename)
     with open(file_path, "w") as file:
         yaml.dump(data, file, default_flow_style=False)
+
+
+def run_experiments(
+    instance_path, result_path, algorithm, instance_types, instance_num
+):
+    for instance_type in instance_types:
+        for i in range(1, instance_num + 1):
+            print(f"Optimizing instance {instance_type}_{i}/100")
+            config_path = os.path.join(
+                instance_path, instance_type, f"instance_{instance_type}_{i}.yaml"
+            )
+            result = algorithm(config_path)
+            result_dir = os.path.join(result_path, instance_type)
+            os.makedirs(result_dir, exist_ok=True)
+            result_file = os.path.join(result_dir, f"result_{instance_type}_{i}.yaml")
+            save_yaml(result, result_file)
+            print(f"Saved result for instance {instance_type}_{i} to {result_path}")
