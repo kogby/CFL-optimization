@@ -6,6 +6,7 @@ import random
 import numpy as np
 from path_config import INSTANCES_DIR
 
+
 def cal_distance(point_1, point_2, cal_method="euclidean"):
     """
     Calculate the distance between two points.
@@ -13,7 +14,7 @@ def cal_distance(point_1, point_2, cal_method="euclidean"):
     Args:
     - point_1 (tuple): The coordinates of the first point.
     - point_2 (tuple): The coordinates of the second point.
-    - cal_method (str, optional): The method to use for distance calculation. 
+    - cal_method (str, optional): The method to use for distance calculation.
       Can be "euclidean" (default) or "manhattan".
 
     Returns:
@@ -23,10 +24,11 @@ def cal_distance(point_1, point_2, cal_method="euclidean"):
     x1, y1 = point_1
     x2, y2 = point_2
     if cal_method == "euclidean":
-        distance = math.sqrt((x2 - x1)**2 + (y2 - y1)**2)
+        distance = math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
     elif cal_method == "manhattan":
         distance = abs(x2 - x1) + abs(y2 - y1)
     return round(distance, 2)
+
 
 def create_points(num_points, map_size):
     """
@@ -70,14 +72,27 @@ def dist_list_generator(customers, locations):
 def load_specific_yaml(filename):
     """
     Load the content of a YAML file from the instances folder.
-    
+
     Parameters:
     filename (str): 在 instances 資料夾中的 YAML 檔案名。
-    
+
     Returns:
     dict: YAML 檔案內容。
     """
     file_path = os.path.join(INSTANCES_DIR, filename)
-    with open(file_path, 'r') as file:
+    with open(file_path, "r") as file:
         data = yaml.safe_load(file)
     return data
+
+
+def save_yaml(data, filename):
+    """
+    Save data to a YAML file in the instances folder.
+
+    Args:
+    - data (dict): The data to save to the file.
+    - filename (str): The name of the file to save the data to.
+    """
+    file_path = os.path.join(INSTANCES_DIR, filename)
+    with open(file_path, "w") as file:
+        yaml.dump(data, file, default_flow_style=False)
