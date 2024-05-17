@@ -52,7 +52,7 @@ def greedy_best_location(
     compensate_attractiveness: list,
     cars_usage_record: list,
     total_util_list: list,
-    verbose: bool = True,
+    verbose: int = 1,
 ):
     """
     Finds the best location to allocate resources based on maximizing utility until a point can no longer accommodate more resources.
@@ -120,9 +120,9 @@ def greedy_best_location(
             )
             if verbose:
                 print(
-                    f"這次的cur_util:{cur_util}, 蓋多少廁所？{tmp_compensate_attractiveness[ind]}"
+                    f"地點{ind+1}的cur_util:{cur_util}, 蓋廁所數量：{tmp_compensate_attractiveness[ind]}"
                 )
-                print("compensate:", tmp_compensate_attractiveness)
+                print("廁所:", tmp_compensate_attractiveness)
             tmp_cars_usage_record = copy.deepcopy(cars_usage_record)
             tmp_cars_usage_record.extend([(x[0], x[1], ind) for x in cur_to_fill])
             tmp_total_util_list = copy.deepcopy(total_util_list)
@@ -130,12 +130,13 @@ def greedy_best_location(
 
             # Calculate the current objective value
             cur_obj = calc_current_gain(
-                cur_config, tmp_candidates, tmp_total_util_list
+                cur_config, tmp_candidates, tmp_total_util_list, verbose
             ) - calc_current_cost(
                 cur_config,
                 tmp_candidates,
                 tmp_compensate_attractiveness,
                 tmp_cars_usage_record,
+                verbose,
             )
             if cur_obj > best_obj:
                 best_obj = cur_obj
@@ -177,7 +178,9 @@ def update_config_each_iteration_build_j(config: dict, cars_to_fill: list):
     return config
 
 
-def calc_current_gain(config: dict, facility_is_built: list, total_util_list: list):
+def calc_current_gain(
+    config: dict, facility_is_built: list, total_util_list: list, verbose: int = 0
+):
     """
     Calculate the current gain based on the configuration, built facilities, and total utility list.
 
@@ -200,10 +203,12 @@ def calc_current_gain(config: dict, facility_is_built: list, total_util_list: li
             * our_vs_all_percentage
         )
         total_gain += customer_gain
-        print(
-            f"Customer point {customer_pt_i}: total_attr={total_attr_i}, G={G_function(total_attr_i)}, Our percentage={our_vs_all_percentage}, Earned money={customer_gain}"
-        )
-    print(f"Total earned money: {total_gain}")
+        if verbose == 2:
+            print(
+                f"Customer {customer_pt_i} | total_attr={total_attr_i:.4f} | G={G_function(total_attr_i):.4f}, Our percentage={our_vs_all_percentage:.4f}, Earned money={customer_gain:.4f}"
+            )
+    if verbose == 2:
+        print(f"Total earned money: {total_gain:.4f}")
     return total_gain
 
 
@@ -251,6 +256,7 @@ def calc_current_cost(
     facility_is_built: list,
     compensate_attractiveness: list,
     cars_usage_record: list,
+    verbose: int = 0,
 ):
     """
     Calculate the current cost based on the configuration, built facilities, compensation for attractiveness, and cars usage record.
@@ -279,14 +285,15 @@ def calc_current_cost(
     total_cost += build_cost + attr_cost
 
     # Print cost breakdown
-    print(
-        f"Build cost: {build_cost}, Attractiveness compensation cost: {attr_cost}, Cars usage cost: {total_cost - build_cost - attr_cost}, Total cost: {total_cost}\n"
-    )
+    if verbose == 2:
+        print(
+            f"Build cost: {build_cost} | Extra Attraction cost: {attr_cost} | Cars usage cost: {total_cost - build_cost - attr_cost} | Total cost: {total_cost}\n"
+        )
 
     return total_cost
 
 
-def optimize(config_path):
+def heuristic_greedy_optimize(config_path, verbose=1):
     """
     Optimize the configuration based on the provided YAML file.
 
@@ -309,11 +316,13 @@ def optimize(config_path):
     cars_usage_record = (
         []
     )  # 紀錄每次分了多少車給哪個j [(1, 5, 18),(0, 4, 18),(2, 3, 18),(2, 5, 2),...] (第k種車, 幾輛, 給哪個j)
-
+    print(
+        f"Locations: {config['j_amount']}, Customers: {config['i_amount']}, Cars: {config['k_amount']}, Competitors: {config['l_amount']}"
+    )
     start_time = time.time()
     while improve and any(element != 1 for element in candidates):  # 每輪多建一個點
-        print("Next round begins")
-        print(compensate_attractiveness)
+        print("===============================================================")
+        print("New Iteration begins")
         improve = False
         iter_best_config = copy.deepcopy(config)
         (
@@ -329,9 +338,11 @@ def optimize(config_path):
             compensate_attractiveness,
             cars_usage_record,
             total_util_list,
+            verbose,
         )
-        print(cur_compensate_attractiveness)
-        print(f"Current objective: {cur_obj}, location to build: {cur_loc_to_build}")
+        # print(
+        #     f"Extra attract for each location: {cur_compensate_attractiveness} | Current objective: {cur_obj}"
+        # )
         if cur_obj > overall_best_obj:
             improve = True
             config.update(cur_config)
@@ -340,27 +351,44 @@ def optimize(config_path):
             compensate_attractiveness = copy.deepcopy(cur_compensate_attractiveness)
             cars_usage_record = copy.deepcopy(cur_cars_usage_record)
             total_util_list = copy.deepcopy(cur_total_util_list)
-        print("\n\nRound result:")
-        print("List of built facilities:", candidates)
-        print("Cars usage record:", cars_usage_record)
-        print(
-            "Compensation for attractiveness table (Toilets):",
-            compensate_attractiveness,
-        )
-        print("Total utility list for each location:", total_util_list)
+            print("\n\nRound result:")
+            print("List of built facilities:", candidates)
+            print(
+                "Cars usage record ((car type k , number, location)):",
+                cars_usage_record,
+            )
+            print(
+                "Extra attract for each location (Toilets):",
+                compensate_attractiveness,
+            )
+            print("Total utility list for each location:", total_util_list)
+            print(f"Current objective: {cur_obj}")
+        else:
+            print("No improvement in this iteration. End the loop\n\n")
 
     print(f"Final result: Overall best objective value: {overall_best_obj}")
     # End recording time
     end_time = time.time()
     execution_time = end_time - start_time
 
-    result = {
-        "overall_best_obj": overall_best_obj,
-        "candidates": candidates,
-        "compensate_attractiveness": compensate_attractiveness,
-        "cars_usage_record": cars_usage_record,
-        "total_util_list": total_util_list,
-        "execution_time": execution_time,
-    }
+    # result = {
+    #     "overall_best_obj": overall_best_obj,
+    #     "candidates": candidates,
+    #     "compensate_attractiveness": compensate_attractiveness,
+    #     "cars_usage_record": cars_usage_record,
+    #     "total_util_list": total_util_list,
+    #     "execution_time": execution_time,
+    # }
+    x_jk = [[0] * config["k_amount"] for _ in range(config["j_amount"])]
+    for k, value, j in cars_usage_record:
+        x_jk[j][k] = value
 
-    return result
+    result_formal = {
+        "Method": "original problem",
+        "OBJ_value": overall_best_obj,
+        "best_Y": candidates,
+        "best_X": x_jk,
+        "best_A_EX": compensate_attractiveness,
+        "spend_time(s)": execution_time,
+    }
+    return result_formal
