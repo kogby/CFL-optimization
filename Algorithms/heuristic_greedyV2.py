@@ -313,7 +313,7 @@ def calc_current_cost(
     return total_cost
 
 
-def heuristic_greedy_optimize(config_path, verbose=1):
+def heuristic_greedy_optimizeV2(config_path, verbose=1):
     """
     Optimize the configuration based on the provided YAML file.
 
