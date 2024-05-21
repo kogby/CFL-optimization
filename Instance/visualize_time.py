@@ -37,8 +37,9 @@ def plot_spend_time(
 
 
 # Example usage
-result_base_path = "Benchmark-Test/OG_Model_0430/result"
-output_dir = "plots_greedyV1_vs_gurobi"
+current_dir = os.path.dirname(os.path.abspath(__file__))
+result_base_path =  os.path.join(current_dir, "Benchmark-Test/OG_Model_0430/result/greedyV2")
+output_dir = os.path.join(current_dir, "plots_greedyV2_vs_gurobi")
 
 # Ensure the output directory exists
 os.makedirs(output_dir, exist_ok=True)
