@@ -6,6 +6,7 @@ import time
 import os
 
 current_dir = os.path.dirname(__file__)
+# current_dir = os.getcwd()  #用在ipynb
 
 # 添加上一级目录到 sys.path
 parent_dir = os.path.abspath(os.path.join(current_dir, '..'))
@@ -69,6 +70,7 @@ def greedy_best_location(
     compensate_attractiveness: list,
     cars_usage_record: list,
     total_util_list: list,
+    obj_e_this_round: int,
     verbose: int = 1,
 ):
     """
@@ -80,6 +82,7 @@ def greedy_best_location(
         compensate_attractiveness (list): List representing compensation for attractiveness.
         cars_usage_record (list): Record of cars' usage.
         total_util_list (list): List representing total utility.
+        obj_e_this_round: maximun value for the attractiveness to reach. 平常是E_MAX_INPUT, 偶爾被影響變小在最後一輪
         verbose (bool, optional): Whether to print messages or not. Defaults to True.
 
     Returns:
@@ -111,14 +114,14 @@ def greedy_best_location(
             while quota_loc > 0:
                 if len(sorted_car_list) == 0:  # 當下能丟在這的車都丟完了
                     break
-                elif cur_util >= E_MAX_INPUT:  # 大於最高效益再丟都是浪費
+                elif cur_util >= obj_e_this_round:  # 大於最高效益再丟都是浪費
                     break
                 car_to_fill = sorted_car_list.pop(0)
                 num_to_fill = min(
                     quota_loc,
                     quota_loc_k[car_to_fill[1]],
                     quota_k[car_to_fill[1]],
-                    math.ceil((E_MAX_INPUT - cur_util) / car_to_fill[0]),
+                    math.ceil((obj_e_this_round - cur_util) / car_to_fill[0]),
                 )
                 quota_k[car_to_fill[1]] -= num_to_fill
                 quota_loc_k[car_to_fill[1]] -= num_to_fill
@@ -133,7 +136,7 @@ def greedy_best_location(
             tmp_candidates[ind] = 1
             tmp_compensate_attractiveness = copy.deepcopy(compensate_attractiveness)
             tmp_compensate_attractiveness[ind] = min(
-                max(0, E_MAX_INPUT - cur_util), iter_config["A_EX_bound"]
+                max(0, obj_e_this_round - cur_util), iter_config["A_EX_bound"]
             )
             if verbose:
                 print(
@@ -355,11 +358,9 @@ def heuristic_greedy_optimize(config_path, verbose=1):
             compensate_attractiveness,
             cars_usage_record,
             total_util_list,
+            E_MAX_INPUT,
             verbose,
         )
-        # print(
-        #     f"Extra attract for each location: {cur_compensate_attractiveness} | Current objective: {cur_obj}"
-        # )
         if cur_obj > overall_best_obj:
             improve = True
             config.update(cur_config)
@@ -382,26 +383,51 @@ def heuristic_greedy_optimize(config_path, verbose=1):
             print(f"Current objective: {cur_obj}")
         else:
             print("No improvement in this iteration. End the loop\n\n")
-
+    # TODO 這次改動：加入最後一次嘗試，不要規定要填滿E
+    iter_best_config = copy.deepcopy(config)
+    for percentage in [64,32,16,8,4,2,1]:
+      print("迴圈結束後, 嘗試不同的E%數:")
+      (
+          cur_config,
+          cur_obj,
+          cur_loc_to_build,
+          cur_compensate_attractiveness,
+          cur_cars_usage_record,
+          cur_total_util_list,
+      ) = greedy_best_location(
+          iter_best_config,
+          candidates,
+          compensate_attractiveness,
+          cars_usage_record,
+          total_util_list,
+          math.floor(E_MAX_INPUT * percentage / 100),
+          verbose = 0,
+      )
+      if cur_obj > overall_best_obj: #在這個%數，原本100%的E_MAX_INPUT沒有找到更好的卻在這找到更好的了
+          print(f"!!!{percentage}%的嘗試({math.floor(E_MAX_INPUT * percentage / 100)})找到更好的obj, 此%數找到cur_obj:{cur_obj}大於原本{overall_best_obj}!!!")
+          config.update(cur_config)
+          overall_best_obj = cur_obj
+          candidates[cur_loc_to_build] = 1
+          compensate_attractiveness = copy.deepcopy(cur_compensate_attractiveness)
+          cars_usage_record = copy.deepcopy(cur_cars_usage_record)
+          total_util_list = copy.deepcopy(cur_total_util_list)
+          break
+      else:
+          print(f"{percentage}%的嘗試({math.floor(E_MAX_INPUT * percentage / 100)})並沒有找到更好的obj, 此%數找到cur_obj:{cur_obj}")
     print(f"Final result: Overall best objective value: {overall_best_obj}")
+    print("效用總表對於每個點：", total_util_list)
     # End recording time
     end_time = time.time()
     execution_time = end_time - start_time
 
-    # result = {
-    #     "overall_best_obj": overall_best_obj,
-    #     "candidates": candidates,
-    #     "compensate_attractiveness": compensate_attractiveness,
-    #     "cars_usage_record": cars_usage_record,
-    #     "total_util_list": total_util_list,
-    #     "execution_time": execution_time,
-    # }
     x_jk = [[0] * config["k_amount"] for _ in range(config["j_amount"])]
     for k, value, j in cars_usage_record:
         x_jk[j][k] = value
 
     result_formal = {
         "Method": "original problem",
+        #"cars_usage_record": cars_usage_record,
+        #"total_util_list": total_util_list,
         "OBJ_value": overall_best_obj,
         "best_Y": candidates,
         "best_X": x_jk,
@@ -413,3 +439,4 @@ def heuristic_greedy_optimize(config_path, verbose=1):
 if __name__ == '__main__':
   instance_path = os.path.join('Benchmark-Test','OG_Model_0430','instance','S','instance_S_1.yaml')
   result = heuristic_greedy_optimize(instance_path, verbose=2)
+  print(f"廁所總表：{result['best_A_EX']}")
