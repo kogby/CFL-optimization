@@ -1,3 +1,4 @@
+"""This file is used to compare the obj percentage gap between algorithm and gurobi"""
 import os
 import yaml
 import pandas as pd

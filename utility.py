@@ -102,7 +102,7 @@ def run_experiments(
     instance_path, result_path, algorithm, instance_types, instance_num, verbose=1
 ):
     print(
-        f"Running experiments | algorithm:  {algorithm.__name__} | instance_types: {' '.join(instance_types)}"
+        f"Running experiments -> | algorithm:  {algorithm.__name__} | instance_types: {' '.join(instance_types)}"
     )
 
     for instance_type in instance_types:
@@ -117,3 +117,5 @@ def run_experiments(
             result_file = os.path.join(result_dir, f"result_{instance_type}_{i}.yaml")
             save_yaml(result, result_file)
             print(f"Saved result for instance {instance_type}_{i} to {result_path}")
+            print("!!! instance end !!!")
+            print("=====================================================================\n\n")

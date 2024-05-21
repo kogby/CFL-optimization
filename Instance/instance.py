@@ -1,3 +1,4 @@
+"""This file is used to generate instances"""
 import random
 import yaml
 import os

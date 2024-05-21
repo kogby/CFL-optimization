@@ -1,3 +1,4 @@
+"""This file is used to plot the execution time of each instance(S,M,L)"""
 import os
 import yaml
 import matplotlib.pyplot as plt
