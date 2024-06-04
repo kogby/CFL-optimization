@@ -4,11 +4,13 @@ import yaml
 import pandas as pd
 import matplotlib.pyplot as plt
 
+
 def extract_best_obj(result_path):
     with open(result_path, "r") as file:
         result_data = yaml.safe_load(file)
         best_obj = result_data.get("OBJ_value", None)
         return best_obj
+
 
 def compare_obj(result_base_paths, other_algo_df, instance_type):
     best_objs_list = []
@@ -37,10 +39,15 @@ def compare_obj(result_base_paths, other_algo_df, instance_type):
 
     return percentage_diffs
 
+
 # Example usage
 current_dir = os.path.dirname(os.path.abspath(__file__))
-result_base_path_1 = os.path.join(current_dir, "Benchmark-Test/OG_Model_0430/result/greedyV1")
-result_base_path_2 = os.path.join(current_dir, "Benchmark-Test/OG_Model_0430/result/greedyV2")
+result_base_path_1 = os.path.join(
+    current_dir, "Benchmark-Test/OG_Model_0430/result/greedyV1"
+)
+result_base_path_2 = os.path.join(
+    current_dir, "Benchmark-Test/OG_Model_0430/result/greedyV2"
+)
 output_dir = os.path.join(current_dir, "plots_greedyV2_vs_gurobi")
 
 # Ensure the output directory exists
@@ -55,12 +62,18 @@ other_algo_dfs = {
 }
 
 result_base_paths = [result_base_path_1, result_base_path_2]
-colors = ['b', 'g', 'm']
-labels = ['greedyV1', 'greedyV2']
+colors = ["b", "g", "m"]
+labels = ["greedyV1", "greedyV2"]
 
-for instance_type in ["S", "M", "L"]:
+instance_types = ["S"]
+for instance_type in instance_types:
     other_algo_df = other_algo_dfs[instance_type]
     percentage_diffs = compare_obj(result_base_paths, other_algo_df, instance_type)
+
+    # Check Threshold
+    for i, diff in enumerate(percentage_diffs[1]):
+        if diff <= 40:
+            print(i, diff)
 
     plt.figure(figsize=(10, 6))
     for idx, percentage_diff in enumerate(percentage_diffs):
@@ -71,13 +84,13 @@ for instance_type in ["S", "M", "L"]:
             marker="o",
             linestyle="",
             color=colors[idx],
-            label=f"{labels[idx]} (Avg: {average_percentage_diff:.2f}%)"
+            label=f"{labels[idx]} (Avg: {average_percentage_diff:.2f}%)",
         )
         plt.axhline(
             y=average_percentage_diff,
             color=colors[idx],
             linestyle="--",
-            label=f"{labels[idx]} Avg"
+            label=f"{labels[idx]} Avg",
         )
 
     plt.xlabel("Instance Index")

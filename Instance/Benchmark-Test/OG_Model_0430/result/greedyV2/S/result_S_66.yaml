@@ -103,4 +103,5 @@ best_Y:
 - 1
 - 1
 - 0
-spend_time(s): 0.06246209144592285
+iteration_times: 4
+spend_time(s): 0.0761263370513916

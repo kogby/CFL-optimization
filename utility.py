@@ -99,14 +99,23 @@ def save_yaml(data, filename):
 
 
 def run_experiments(
-    instance_path, result_path, algorithm, instance_types, instance_num, verbose=1
+    instance_path,
+    result_path,
+    algorithm,
+    instance_types,
+    instance_num,
+    specify=False,
+    verbose=1,
 ):
     print(
         f"Running experiments -> | algorithm:  {algorithm.__name__} | instance_types: {' '.join(instance_types)}"
     )
 
     for instance_type in instance_types:
-        for i in range(1, instance_num + 1):
+        start, end = 1, instance_num + 1
+        if specify:
+            start, end = instance_num, instance_num + 1
+        for i in range(start, end):
             print(f"Instance {instance_type}_{i}/100")
             config_path = os.path.join(
                 instance_path, instance_type, f"instance_{instance_type}_{i}.yaml"
@@ -118,4 +127,6 @@ def run_experiments(
             save_yaml(result, result_file)
             print(f"Saved result for instance {instance_type}_{i} to {result_path}")
             print("!!! instance end !!!")
-            print("=====================================================================\n\n")
+            print(
+                "=====================================================================\n\n"
+            )

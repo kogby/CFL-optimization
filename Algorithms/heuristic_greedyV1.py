@@ -140,7 +140,7 @@ def greedy_best_location(
             )
             if cur_obj > best_obj:
                 best_obj = cur_obj
-                best_loc = ind
+                best_loc = ind + 1
                 best_compensate_attractiveness = copy.deepcopy(
                     tmp_compensate_attractiveness
                 )

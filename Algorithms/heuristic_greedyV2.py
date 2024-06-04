@@ -1,4 +1,5 @@
 """此版本嘗試在決定不蓋以後的那個輪次，嘗試[64,32,16,8,4,2,1], 一路減半直到決定要蓋或到了1%都還沒有要蓋"""
+
 import sys
 import copy
 import math
@@ -9,7 +10,7 @@ current_dir = os.path.dirname(__file__)
 # current_dir = os.getcwd()  #用在ipynb
 
 # 添加上一级目录到 sys.path
-parent_dir = os.path.abspath(os.path.join(current_dir, '..'))
+parent_dir = os.path.abspath(os.path.join(current_dir, ".."))
 sys.path.append(parent_dir)
 import utility as util
 
@@ -158,6 +159,8 @@ def greedy_best_location(
                 tmp_cars_usage_record,
                 verbose,
             )
+            if verbose == 2:
+                print(f"地點 {ind+1}的 cur_obj: {cur_obj:.4f}\n")
             if cur_obj > best_obj:
                 best_obj = cur_obj
                 best_loc = ind
@@ -169,7 +172,7 @@ def greedy_best_location(
                 best_total_util_list = copy.deepcopy(tmp_total_util_list)
 
     if verbose:
-        print(f"Iteration ended! Found the best location: {best_loc}")
+        print(f"Iteration ended! Found the best location: {best_loc+1}")
         print(f"Best obj: {best_obj}")
 
     return (
@@ -307,7 +310,7 @@ def calc_current_cost(
     # Print cost breakdown
     if verbose == 2:
         print(
-            f"Build cost: {build_cost} | Extra Attraction cost: {attr_cost} | Cars usage cost: {total_cost - build_cost - attr_cost} | Total cost: {total_cost}\n"
+            f"Build cost: {build_cost} | Extra Attraction cost: {attr_cost} | Cars usage cost: {total_cost - build_cost - attr_cost} | Total cost: {total_cost}"
         )
 
     return total_cost
@@ -339,6 +342,7 @@ def heuristic_greedy_optimizeV2(config_path, verbose=1):
     print(
         f"Locations: {config['j_amount']}, Customers: {config['i_amount']}, Cars: {config['k_amount']}, Competitors: {config['l_amount']}"
     )
+    iteration_times = 0
     start_time = time.time()
     while improve and any(element != 1 for element in candidates):  # 每輪多建一個點
         print("===============================================================")
@@ -363,6 +367,7 @@ def heuristic_greedy_optimizeV2(config_path, verbose=1):
         )
         if cur_obj > overall_best_obj:
             improve = True
+            iteration_times += 1
             config.update(cur_config)
             overall_best_obj = cur_obj
             candidates[cur_loc_to_build] = 1
@@ -385,35 +390,41 @@ def heuristic_greedy_optimizeV2(config_path, verbose=1):
             print("No improvement in this iteration. End the loop\n\n")
     # TODO 這次改動：加入最後一次嘗試，不要規定要填滿E
     iter_best_config = copy.deepcopy(config)
-    for percentage in [64,32,16,8,4,2,1]:
-      print("迴圈結束後, 嘗試不同的E%數:")
-      (
-          cur_config,
-          cur_obj,
-          cur_loc_to_build,
-          cur_compensate_attractiveness,
-          cur_cars_usage_record,
-          cur_total_util_list,
-      ) = greedy_best_location(
-          iter_best_config,
-          candidates,
-          compensate_attractiveness,
-          cars_usage_record,
-          total_util_list,
-          math.floor(E_MAX_INPUT * percentage / 100),
-          verbose = 0,
-      )
-      if cur_obj > overall_best_obj: #在這個%數，原本100%的E_MAX_INPUT沒有找到更好的卻在這找到更好的了
-          print(f"!!!{percentage}%的嘗試({math.floor(E_MAX_INPUT * percentage / 100)})找到更好的obj, 此%數找到cur_obj:{cur_obj}大於原本{overall_best_obj}!!!")
-          config.update(cur_config)
-          overall_best_obj = cur_obj
-          candidates[cur_loc_to_build] = 1
-          compensate_attractiveness = copy.deepcopy(cur_compensate_attractiveness)
-          cars_usage_record = copy.deepcopy(cur_cars_usage_record)
-          total_util_list = copy.deepcopy(cur_total_util_list)
-          break
-      else:
-          print(f"{percentage}%的嘗試({math.floor(E_MAX_INPUT * percentage / 100)})並沒有找到更好的obj, 此%數找到cur_obj:{cur_obj}")
+    for percentage in [64, 32, 16, 8, 4, 2, 1]:
+        print("迴圈結束後, 嘗試不同的E%數:")
+        (
+            cur_config,
+            cur_obj,
+            cur_loc_to_build,
+            cur_compensate_attractiveness,
+            cur_cars_usage_record,
+            cur_total_util_list,
+        ) = greedy_best_location(
+            iter_best_config,
+            candidates,
+            compensate_attractiveness,
+            cars_usage_record,
+            total_util_list,
+            math.floor(E_MAX_INPUT * percentage / 100),
+            verbose=0,
+        )
+        if (
+            cur_obj > overall_best_obj
+        ):  # 在這個%數，原本100%的E_MAX_INPUT沒有找到更好的卻在這找到更好的了
+            print(
+                f"!!!{percentage}%的嘗試({math.floor(E_MAX_INPUT * percentage / 100)})找到更好的obj, 此%數找到cur_obj:{cur_obj}大於原本{overall_best_obj}!!!"
+            )
+            config.update(cur_config)
+            overall_best_obj = cur_obj
+            candidates[cur_loc_to_build] = 1
+            compensate_attractiveness = copy.deepcopy(cur_compensate_attractiveness)
+            cars_usage_record = copy.deepcopy(cur_cars_usage_record)
+            total_util_list = copy.deepcopy(cur_total_util_list)
+            break
+        else:
+            print(
+                f"{percentage}%的嘗試({math.floor(E_MAX_INPUT * percentage / 100)})並沒有找到更好的obj, 此%數找到cur_obj:{cur_obj}"
+            )
     print(f"Final result: Overall best objective value: {overall_best_obj}")
     print("效用總表對於每個點：", total_util_list)
     # End recording time
@@ -426,17 +437,21 @@ def heuristic_greedy_optimizeV2(config_path, verbose=1):
 
     result_formal = {
         "Method": "original problem",
-        #"cars_usage_record": cars_usage_record,
-        #"total_util_list": total_util_list,
+        # "cars_usage_record": cars_usage_record,
+        # "total_util_list": total_util_list,
         "OBJ_value": overall_best_obj,
         "best_Y": candidates,
         "best_X": x_jk,
         "best_A_EX": compensate_attractiveness,
         "spend_time(s)": execution_time,
+        "iteration_times": iteration_times,
     }
     return result_formal
 
-if __name__ == '__main__':
-  instance_path = os.path.join('Benchmark-Test','OG_Model_0430','instance','S','instance_S_1.yaml')
-  result = heuristic_greedy_optimize(instance_path, verbose=2)
-  print(f"廁所總表：{result['best_A_EX']}")
+
+if __name__ == "__main__":
+    instance_path = os.path.join(
+        "Benchmark-Test", "OG_Model_0430", "instance", "S", "instance_S_1.yaml"
+    )
+    result = heuristic_greedy_optimize(instance_path, verbose=2)
+    print(f"廁所總表：{result['best_A_EX']}")
