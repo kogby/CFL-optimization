@@ -43,12 +43,12 @@ def compare_obj(result_base_paths, other_algo_df, instance_type):
 # Example usage
 current_dir = os.path.dirname(os.path.abspath(__file__))
 result_base_path_1 = os.path.join(
-    current_dir, "Benchmark-Test/OG_Model_0430/result/greedyV1"
-)
-result_base_path_2 = os.path.join(
     current_dir, "Benchmark-Test/OG_Model_0430/result/greedyV2"
 )
-output_dir = os.path.join(current_dir, "plots_greedyV2_vs_gurobi")
+result_base_path_2 = os.path.join(
+    current_dir, "Benchmark-Test/OG_Model_0430/result/greedyV3"
+)
+output_dir = os.path.join(current_dir, "plots_greedyV3_vs_gurobi")
 
 # Ensure the output directory exists
 os.makedirs(output_dir, exist_ok=True)
@@ -63,9 +63,9 @@ other_algo_dfs = {
 
 result_base_paths = [result_base_path_1, result_base_path_2]
 colors = ["b", "g", "m"]
-labels = ["greedyV1", "greedyV2"]
+labels = ["greedyV2", "greedyV3"]
 
-instance_types = ["S"]
+instance_types = ["S", "M", "L"]
 for instance_type in instance_types:
     other_algo_df = other_algo_dfs[instance_type]
     percentage_diffs = compare_obj(result_base_paths, other_algo_df, instance_type)
