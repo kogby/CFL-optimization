@@ -4,8 +4,8 @@ import pandas as pd
 import re
 
 # 定義資料夾的絕對路徑
-base_path = '/Users/wuhuayo/Desktop/CFL-optimization/Instance/Benchmark-Test/OG_Model_0430/result/greedyV3'
-folders = ['L', 'M', 'S']
+base_path = '/Users/wuhuayo/Desktop/CFL-optimization/Instance/Benchmark-Test/OG_Model_0430/result/greedyV4'
+folders = ['S','M','L']
 
 # 正則表達式提取文件名中的數字
 pattern = re.compile(r'result_[A-Z]_(\d+).yaml')
@@ -22,7 +22,11 @@ for folder in folders:
             index = int(match.group(1))
             with open(os.path.join(folder_path, yaml_file), 'r') as file:
                 data = yaml.safe_load(file)
-                obj_values.append({'Index': index, 'OBJ_value': data['OBJ_value']})
+                obj_values.append({
+                    'Index': index, 
+                    'OBJ_value': data['OBJ_value'],
+                    'spend_time(s)': data.get('spend_time(s)', None)  # 使用 get 方法以防止 spend_time(s) 不存在
+                })
     
     # 按索引排序
     obj_values.sort(key=lambda x: x['Index'])
