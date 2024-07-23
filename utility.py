@@ -103,7 +103,8 @@ def run_experiments(
     result_path,
     algorithm,
     instance_types,
-    instance_num,
+    instance_start_idx,
+    instance_end_idx,
     specify=False,
     verbose=1,
 ):
@@ -112,9 +113,7 @@ def run_experiments(
     )
 
     for instance_type in instance_types:
-        start, end = 1, instance_num + 1
-        if specify:
-            start, end = instance_num, instance_num + 1
+        start, end = instance_start_idx, instance_end_idx + 1
         for i in range(start, end):
             print(f"Instance {instance_type}_{i}/100")
             config_path = os.path.join(
