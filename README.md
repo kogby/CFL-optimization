@@ -1,3 +1,16 @@
+## Module structure
+
+```plaintext
+- /Algorithm
+- /Instance
+- /Model
+- utility.py
+- config.py
+- README.md
+- /Images
+```
+
+
 ## A Competitive Facility Location Problem with Endogenous Demand and Resources Allocation
 
 The competitive facility location (CFL) problem has been widely discussed for many
@@ -21,3 +34,7 @@ many served users as possible to maximize profit. To solve this problem, we deve
 mixed-integer programming model and a heuristic algorithm. Through numerical
 experiments, we observed that our algorithm produces results close to the optimal solution
 within an acceptable time frame.
+
+
+### Greedy Heuristic Algorithm Flow Chart
+![Flow chart](./Images/heuristic_flow_chart.png)
