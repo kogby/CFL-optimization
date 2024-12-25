@@ -2,10 +2,8 @@ import sys
 import copy
 import math
 import time
-
 sys.path.append("../")
 import utility as util
-
 
 E_MAX_INPUT = 100
 G_MAX_INPUT = 133

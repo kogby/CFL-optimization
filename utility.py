@@ -4,7 +4,7 @@ import yaml
 import math
 import random
 import numpy as np
-from path_config import INSTANCES_DIR
+from config import INSTANCES_DIR
 
 
 def cal_distance(point_1, point_2, cal_method="euclidean"):
